@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Finance Manager</title>
+    <style>
+        :root {
+            --income-color: #2ecc71;
+            --expense-color: #e74c3c;
+            --card-bg: #ffffff;
+            --bg: #f0f2f5;
+            --text: #333;
+            --border: #ddd;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --radius: 10px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .app-container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .summary {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            flex: 1;
+            min-width: 150px;
+            background: #f9f9f9;
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .summary-card h3 {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .summary-card p {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .income-text { color: var(--income-color); }
+        .expense-text { color: var(--expense-color); }
+        .balance-text { color: #2c3e50; }
+
+        .budget-section {
+            background: #f9f9f9;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+        .budget-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .budget-input {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .budget-input input {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--income-color);
+            transition: width 0.3s ease;
+        }
+        .progress-fill.over-budget {
+            background: var(--expense-color);
+        }
+        .progress-text {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .form-section {
+            background: #f9f9f9;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+        .form-section h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .transaction-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        .transaction-form select,
+        .transaction-form input {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .transaction-form button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .transaction-form button:hover {
+            background: #2980b9;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .filters select,
+        .filters input {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .filters input {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .transaction-list {
+            list-style: none;
+        }
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background: white;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .transaction-item:hover {
+            transform: translateX(5px);
+        }
+        .transaction-info {
+            flex: 1;
+        }
+        .transaction-desc {
+            font-weight: 600;
+        }
+        .transaction-meta {
+            font-size: 0.85rem;
+            color: #777;
+            margin-top: 4px;
+        }
+        .transaction-amount {
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .income-amount { color: var(--income-color); }
+        .expense-amount { color: var(--expense-color); }
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0 5px;
+        }
+        .delete-btn:hover {
+            color: #c0392b;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <h1>🎓 Student Finance Manager</h1>
+
+        <!-- Summary Cards -->
+        <div class="summary">
+            <div class="summary-card">
+                <h3>Total Income</h3>
+                <p class="income-text" id="totalIncome">$0.00</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Expenses</h3>
+                <p class="expense-text" id="totalExpenses">$0.00</p>
+            </div>
+            <div class="summary-card">
+                <h3>Balance</h3>
+                <p class="balance-text" id="balance">$0.00</p>
+            </div>
+        </div>
+
+        <!-- Monthly Budget -->
+        <div class="budget-section">
+            <h2>📊 Monthly Budget</h2>
+            <div class="budget-input">
+                <input type="number" id="budgetAmount" placeholder="Enter monthly budget ($)" min="0">
+                <button id="setBudgetBtn">Set Budget</button>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="budgetProgress"></div>
+            </div>
+            <p class="progress-text" id="budgetText">No budget set</p>
+        </div>
+
+        <!-- Add Transaction Form -->
+        <div class="form-section">
+            <h2>➕ Add Transaction</h2>
+            <form class="transaction-form" id="transactionForm">
+                <select id="type" required>
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                </select>
+                <input type="text" id="description" placeholder="Description" required>
+                <input type="number" id="amount" placeholder="Amount ($)" min="0.01" step="0.01" required>
+                <input type="date" id="date" required>
+                <button type="submit">Add</button>
+            </form>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <select id="filterType">
+                <option value="all">All Transactions</option>
+                <option value="income">Income Only</option>
+                <option value="expense">Expense Only</option>
+            </select>
+            <input type="text" id="searchInput" placeholder="Search by description...">
+        </div>
+
+        <!-- Transaction List -->
+        <ul class="transaction-list" id="transactionList"></ul>
+        <div class="empty-message" id="emptyMessage">No transactions found.</div>
+    </div>
+
+    <script>
+        // ---------- Data Management ----------
+        const STORAGE_KEY = 'student_finance_data';
+        const BUDGET_KEY = 'student_finance_budget';
+
+        // Load transactions from localStorage
+        function loadTransactions() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        // Save transactions to localStorage
+        function saveTransactions(transactions) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+        }
+
+        // Load budget from localStorage
+        function loadBudget() {
+            const budget = localStorage.getItem(BUDGET_KEY);
+            return budget ? parseFloat(budget) : null;
+        }
+
+        // Save budget to localStorage
+        function saveBudget(budget) {
+            if (budget !== null) {
+                localStorage.setItem(BUDGET_KEY, budget.toString());
+            } else {
+                localStorage.removeItem(BUDGET_KEY);
+            }
+        }
+
+        // ---------- State ----------
+        let transactions = loadTransactions();
+        let monthlyBudget = loadBudget();
+
+        // ---------- DOM Elements ----------
+        const totalIncomeEl = document.getElementById('totalIncome');
+        const totalExpensesEl = document.getElementById('totalExpenses');
+        const balanceEl = document.getElementById('balance');
+        const transactionForm = document.getElementById('transactionForm');
+        const typeSelect = document.getElementById('type');
+        const descriptionInput = document.getElementById('description');
+        const amountInput = document.getElementById('amount');
+        const dateInput = document.getElementById('date');
+        const transactionListEl = document.getElementById('transactionList');
+        const emptyMessageEl = document.getElementById('emptyMessage');
+        const filterTypeEl = document.getElementById('filterType');
+        const searchInputEl = document.getElementById('searchInput');
+        const budgetAmountEl = document.getElementById('budgetAmount');
+        const setBudgetBtn = document.getElementById('setBudgetBtn');
+        const budgetProgressEl = document.getElementById('budgetProgress');
+        const budgetTextEl = document.getElementById('budgetText');
+
+        // Set today's date as default in date input
+        dateInput.valueAsDate = new Date();
+
+        // ---------- Utility Functions ----------
+        function formatCurrency(amount) {
+            return '$' + amount.toFixed(2);
+        }
+
+        // Update summary and budget progress
+        function updateSummaryAndBudget() {
+            const totalIncome = transactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const totalExpenses = transactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const balance = totalIncome - totalExpenses;
+
+            totalIncomeEl.textContent = formatCurrency(totalIncome);
+            totalExpensesEl.textContent = formatCurrency(totalExpenses);
+            balanceEl.textContent = formatCurrency(balance);
+
+            // Update budget progress
+            if (monthlyBudget !== null && monthlyBudget > 0) {
+                const percent = (totalExpenses / monthlyBudget) * 100;
+                budgetProgressEl.style.width = Math.min(percent, 100) + '%';
+                budgetProgressEl.classList.toggle('over-budget', percent > 100);
+                budgetTextEl.textContent = `Spent ${formatCurrency(totalExpenses)} of ${formatCurrency(monthlyBudget)} (${percent.toFixed(1)}%)`;
+                if (percent > 100) {
+                    budgetTextEl.textContent += ' - Over budget!';
+                }
+            } else {
+                budgetProgressEl.style.width = '0%';
+                budgetProgressEl.classList.remove('over-budget');
+                budgetTextEl.textContent = 'No budget set';
+            }
+        }
+
+        // Render transaction list based on filters
+        function renderTransactions() {
+            const filterType = filterTypeEl.value;
+            const searchTerm = searchInputEl.value.toLowerCase().trim();
+
+            const filtered = transactions.filter(t => {
+                const matchesType = filterType === 'all' || t.type === filterType;
+                const matchesSearch = t.description.toLowerCase().includes(searchTerm);
+                return matchesType && matchesSearch;
+            });
+
+            transactionListEl.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyMessageEl.style.display = 'block';
+                transactionListEl.style.display = 'none';
+                return;
+            }
+
+            emptyMessageEl.style.display = 'none';
+            transactionListEl.style.display = 'block';
+
+            // Sort by date descending (most recent first)
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            filtered.forEach(transaction => {
+                const li = document.createElement('li');
+                li.className = 'transaction-item';
+                li.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-desc">${escapeHTML(transaction.description)}</div>
+                        <div class="transaction-meta">
+                            ${transaction.type === 'income' ? '💰 Income' : '💸 Expense'} • 
+                            ${new Date(transaction.date).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <span class="transaction-amount ${transaction.type === 'income' ? 'income-amount' : 'expense-amount'}">
+                        ${transaction.type === 'income' ? '+' : '-'}${formatCurrency(transaction.amount)}
+                    </span>
+                    <button class="delete-btn" data-id="${transaction.id}" title="Delete">✕</button>
+                `;
+                transactionListEl.appendChild(li);
+            });
+
+            // Attach delete handlers
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    deleteTransaction(id);
+                });
+            });
+        }
+
+        // Simple escape function to prevent XSS
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // Add a new transaction
+        function addTransaction(e) {
+            e.preventDefault();
+
+            const type = typeSelect.value;
+            const description = descriptionInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+            const date = dateInput.value;
+
+            if (!description || isNaN(amount) || amount <= 0 || !date) {
+                alert('Please fill in all fields with valid data.');
+                return;
+            }
+
+            const newTransaction = {
+                id: Date.now().toString(),
+                type,
+                description,
+                amount,
+                date
+            };
+
+            transactions.push(newTransaction);
+            saveTransactions(transactions);
+            updateSummaryAndBudget();
+            renderTransactions();
+
+            // Reset form
+            transactionForm.reset();
+            dateInput.valueAsDate = new Date();
+        }
+
+        // Delete a transaction
+        function deleteTransaction(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            saveTransactions(transactions);
+            updateSummaryAndBudget();
+            renderTransactions();
+        }
+
+        // Set monthly budget
+        function handleSetBudget() {
+            const budgetValue = parseFloat(budgetAmountEl.value);
+            if (isNaN(budgetValue) || budgetValue <= 0) {
+                alert('Please enter a valid positive budget amount.');
+                return;
+            }
+            monthlyBudget = budgetValue;
+            saveBudget(monthlyBudget);
+            budgetAmountEl.value = '';
+            updateSummaryAndBudget();
+        }
+
+        // ---------- Event Listeners ----------
+        transactionForm.addEventListener('submit', addTransaction);
+        setBudgetBtn.addEventListener('click', handleSetBudget);
+        filterTypeEl.addEventListener('change', renderTransactions);
+        searchInputEl.addEventListener('input', renderTransactions);
+
+        // Initial render
+        updateSummaryAndBudget();
+        renderTransactions();
+        // Pre-fill budget input if budget exists
+        if (monthlyBudget !== null) {
+            budgetAmountEl.value = monthlyBudget;
+        }
+    </script>
+</body>
+</html>
