@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Finance Manager</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --income-color: #2ecc71;
@@ -14,6 +16,8 @@
             --border: #ddd;
             --shadow: 0 2px 8px rgba(0,0,0,0.1);
             --radius: 10px;
+            --primary: #3498db;
+            --primary-dark: #2980b9;
         }
         * {
             margin: 0;
@@ -42,7 +46,14 @@
             text-align: center;
             margin-bottom: 20px;
             color: #2c3e50;
+            font-size: 2rem;
         }
+        h1 i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        /* Summary Cards */
         .summary {
             display: flex;
             gap: 20px;
@@ -52,16 +63,28 @@
         .summary-card {
             flex: 1;
             min-width: 150px;
-            background: #f9f9f9;
+            background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
             border-radius: var(--radius);
             padding: 20px;
             text-align: center;
             box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .summary-card .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
         }
         .summary-card h3 {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .summary-card p {
             font-size: 1.8rem;
@@ -71,17 +94,30 @@
         .expense-text { color: var(--expense-color); }
         .balance-text { color: #2c3e50; }
 
+        /* Budget Section */
         .budget-section {
-            background: #f9f9f9;
+            background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
             border-radius: var(--radius);
             padding: 20px;
             margin-bottom: 30px;
             box-shadow: var(--shadow);
         }
-        .budget-section label {
+        .budget-section h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .budget-section h2 i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        .budget-label {
             display: block;
             margin-bottom: 10px;
             font-weight: 600;
+            color: #555;
         }
         .budget-input {
             display: flex;
@@ -92,10 +128,26 @@
         .budget-input input {
             flex: 1;
             min-width: 120px;
-            padding: 10px;
+            padding: 10px 12px;
             border: 1px solid var(--border);
             border-radius: 5px;
             font-size: 1rem;
+        }
+        .budget-input button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .budget-input button:hover {
+            background: var(--primary-dark);
         }
         .progress-bar {
             width: 100%;
@@ -118,10 +170,14 @@
             margin-top: 8px;
             font-size: 0.9rem;
             color: #555;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
+        /* Form Section */
         .form-section {
-            background: #f9f9f9;
+            background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
             border-radius: var(--radius);
             padding: 20px;
             margin-bottom: 30px;
@@ -130,21 +186,47 @@
         .form-section h2 {
             margin-bottom: 15px;
             color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-section h2 i {
+            color: var(--primary);
+            font-size: 1.5rem;
         }
         .transaction-form {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 12px;
         }
+        .form-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .form-group i {
+            position: absolute;
+            left: 10px;
+            color: #999;
+            pointer-events: none;
+        }
         .transaction-form select,
         .transaction-form input {
-            padding: 10px;
+            padding: 10px 10px 10px 36px;
             border: 1px solid var(--border);
             border-radius: 5px;
             font-size: 1rem;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+        .transaction-form select:focus,
+        .transaction-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
         }
         .transaction-form button {
-            background: #3498db;
+            background: var(--primary);
             color: white;
             border: none;
             padding: 10px 20px;
@@ -152,16 +234,40 @@
             font-size: 1rem;
             cursor: pointer;
             transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            grid-column: 1 / -1;
         }
         .transaction-form button:hover {
-            background: #2980b9;
+            background: var(--primary-dark);
         }
 
+        /* Filters */
+        .filters-section {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filters-label {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #555;
+        }
+        .filters-label i {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
         .filters {
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            flex: 1;
         }
         .filters select,
         .filters input {
@@ -169,12 +275,32 @@
             border: 1px solid var(--border);
             border-radius: 5px;
             font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .filters select:focus,
+        .filters input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
         }
         .filters input {
             flex: 1;
             min-width: 180px;
         }
 
+        /* Transaction List */
+        .transaction-list-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .transaction-list-header i {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
         .transaction-list {
             list-style: none;
         }
@@ -188,25 +314,43 @@
             margin-bottom: 8px;
             border-radius: 5px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         .transaction-item:hover {
             transform: translateX(5px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .transaction-item .type-icon {
+            font-size: 1.5rem;
+            margin-right: 12px;
+            min-width: 25px;
+            text-align: center;
         }
         .transaction-info {
             flex: 1;
         }
         .transaction-desc {
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .transaction-meta {
             font-size: 0.85rem;
             color: #777;
             margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .transaction-meta i {
+            font-size: 0.8rem;
         }
         .transaction-amount {
             font-weight: bold;
             margin-right: 15px;
+            min-width: 100px;
+            text-align: right;
         }
         .income-amount { color: var(--income-color); }
         .expense-amount { color: var(--expense-color); }
@@ -216,33 +360,67 @@
             color: #e74c3c;
             cursor: pointer;
             font-size: 1.2rem;
-            padding: 0 5px;
+            padding: 5px 8px;
+            transition: color 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .delete-btn:hover {
             color: #c0392b;
+            transform: scale(1.2);
         }
         .empty-message {
             text-align: center;
-            padding: 30px;
-            color: #888;
+            padding: 40px 30px;
+            color: #999;
+            display: none;
+        }
+        .empty-message i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+            color: #ddd;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .summary {
+                flex-direction: column;
+            }
+            .transaction-form {
+                grid-template-columns: 1fr;
+            }
+            .transaction-form button {
+                grid-column: 1;
+            }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <h1>🎓 Student Finance Manager</h1>
+        <h1><i class="fas fa-graduation-cap"></i>Student Finance Manager</h1>
 
         <!-- Summary Cards -->
         <div class="summary">
             <div class="summary-card">
+                <i class="fas fa-plus-circle icon income-text"></i>
                 <h3>Total Income</h3>
                 <p class="income-text" id="totalIncome">KES 0.00</p>
             </div>
             <div class="summary-card">
+                <i class="fas fa-minus-circle icon expense-text"></i>
                 <h3>Total Expenses</h3>
                 <p class="expense-text" id="totalExpenses">KES 0.00</p>
             </div>
             <div class="summary-card">
+                <i class="fas fa-wallet icon balance-text"></i>
                 <h3>Balance</h3>
                 <p class="balance-text" id="balance">KES 0.00</p>
             </div>
@@ -250,45 +428,70 @@
 
         <!-- Monthly Budget -->
         <div class="budget-section">
-            <h2>📊 Monthly Budget</h2>
+            <h2><i class="fas fa-chart-pie"></i>Monthly Budget</h2>
+            <label class="budget-label">Set your monthly spending limit</label>
             <div class="budget-input">
                 <input type="number" id="budgetAmount" placeholder="Enter monthly budget (KES)" min="0">
-                <button id="setBudgetBtn">Set Budget</button>
+                <button id="setBudgetBtn"><i class="fas fa-check"></i>Set Budget</button>
             </div>
             <div class="progress-bar">
                 <div class="progress-fill" id="budgetProgress"></div>
             </div>
-            <p class="progress-text" id="budgetText">No budget set</p>
+            <p class="progress-text" id="budgetText"><i class="fas fa-info-circle"></i>No budget set</p>
         </div>
 
         <!-- Add Transaction Form -->
         <div class="form-section">
-            <h2>➕ Add Transaction</h2>
+            <h2><i class="fas fa-plus"></i>Add Transaction</h2>
             <form class="transaction-form" id="transactionForm">
-                <select id="type" required>
-                    <option value="expense">Expense</option>
-                    <option value="income">Income</option>
-                </select>
-                <input type="text" id="description" placeholder="Description" required>
-                <input type="number" id="amount" placeholder="Amount (KES)" min="0.01" step="0.01" required>
-                <input type="date" id="date" required>
-                <button type="submit">Add</button>
+                <div class="form-group">
+                    <i class="fas fa-exchange-alt"></i>
+                    <select id="type" required>
+                        <option value="expense">Expense</option>
+                        <option value="income">Income</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <i class="fas fa-pen"></i>
+                    <input type="text" id="description" placeholder="Description" required style="padding-left: 36px;">
+                </div>
+                <div class="form-group">
+                    <i class="fas fa-coins"></i>
+                    <input type="number" id="amount" placeholder="Amount (KES)" min="0.01" step="0.01" required style="padding-left: 36px;">
+                </div>
+                <div class="form-group">
+                    <i class="fas fa-calendar-alt"></i>
+                    <input type="date" id="date" required style="padding-left: 36px;">
+                </div>
+                <button type="submit"><i class="fas fa-plus"></i>Add Transaction</button>
             </form>
         </div>
 
         <!-- Filters -->
-        <div class="filters">
-            <select id="filterType">
-                <option value="all">All Transactions</option>
-                <option value="income">Income Only</option>
-                <option value="expense">Expense Only</option>
-            </select>
-            <input type="text" id="searchInput" placeholder="Search by description...">
+        <div class="filters-section">
+            <span class="filters-label"><i class="fas fa-filter"></i>Filters:</span>
+            <div class="filters">
+                <select id="filterType">
+                    <option value="all">All Transactions</option>
+                    <option value="income">Income Only</option>
+                    <option value="expense">Expense Only</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="🔍 Search by description...">
+            </div>
+        </div>
+
+        <!-- Transaction List Header -->
+        <div class="transaction-list-header" id="listHeader" style="display: none;">
+            <i class="fas fa-list"></i>
+            <span>Recent Transactions</span>
         </div>
 
         <!-- Transaction List -->
         <ul class="transaction-list" id="transactionList"></ul>
-        <div class="empty-message" id="emptyMessage">No transactions found.</div>
+        <div class="empty-message" id="emptyMessage">
+            <i class="fas fa-inbox"></i>
+            <p>No transactions found.</p>
+        </div>
     </div>
 
     <script>
@@ -343,6 +546,7 @@
         const setBudgetBtn = document.getElementById('setBudgetBtn');
         const budgetProgressEl = document.getElementById('budgetProgress');
         const budgetTextEl = document.getElementById('budgetText');
+        const listHeaderEl = document.getElementById('listHeader');
 
         // Set today's date as default in date input
         dateInput.valueAsDate = new Date();
@@ -350,6 +554,22 @@
         // ---------- Utility Functions ----------
         function formatCurrency(amount) {
             return 'KES ' + amount.toFixed(2);
+        }
+
+        // Get category icon based on description
+        function getCategoryIcon(description) {
+            const desc = description.toLowerCase();
+            if (desc.includes('food') || desc.includes('eat') || desc.includes('lunch') || desc.includes('breakfast') || desc.includes('dinner')) return 'fa-utensils';
+            if (desc.includes('book') || desc.includes('study') || desc.includes('tuition') || desc.includes('course')) return 'fa-book';
+            if (desc.includes('transport') || desc.includes('bus') || desc.includes('taxi') || desc.includes('fuel') || desc.includes('car')) return 'fa-car';
+            if (desc.includes('rent') || desc.includes('house') || desc.includes('accommodation')) return 'fa-home';
+            if (desc.includes('phone') || desc.includes('internet') || desc.includes('utility') || desc.includes('bill')) return 'fa-mobile-alt';
+            if (desc.includes('salary') || desc.includes('wage') || desc.includes('payment') || desc.includes('allowance')) return 'fa-briefcase';
+            if (desc.includes('gift') || desc.includes('bonus')) return 'fa-gift';
+            if (desc.includes('entertainment') || desc.includes('movie') || desc.includes('game')) return 'fa-gamepad';
+            if (desc.includes('health') || desc.includes('medicine') || desc.includes('doctor')) return 'fa-heartbeat';
+            if (desc.includes('cloth') || desc.includes('shoe') || desc.includes('fashion')) return 'fa-tshirt';
+            return 'fa-tag';
         }
 
         // Update summary and budget progress
@@ -371,14 +591,16 @@
                 const percent = (totalExpenses / monthlyBudget) * 100;
                 budgetProgressEl.style.width = Math.min(percent, 100) + '%';
                 budgetProgressEl.classList.toggle('over-budget', percent > 100);
-                budgetTextEl.textContent = `Spent ${formatCurrency(totalExpenses)} of ${formatCurrency(monthlyBudget)} (${percent.toFixed(1)}%)`;
+                
+                const budgetIcon = percent > 100 ? '<i class="fas fa-exclamation-triangle"></i>' : '<i class="fas fa-chart-line"></i>';
+                budgetTextEl.innerHTML = `${budgetIcon} Spent ${formatCurrency(totalExpenses)} of ${formatCurrency(monthlyBudget)} (${percent.toFixed(1)}%)`;
                 if (percent > 100) {
-                    budgetTextEl.textContent += ' - Over budget!';
+                    budgetTextEl.innerHTML += ' - Over budget!';
                 }
             } else {
                 budgetProgressEl.style.width = '0%';
                 budgetProgressEl.classList.remove('over-budget');
-                budgetTextEl.textContent = 'No budget set';
+                budgetTextEl.innerHTML = '<i class="fas fa-info-circle"></i> No budget set';
             }
         }
 
@@ -398,11 +620,13 @@
             if (filtered.length === 0) {
                 emptyMessageEl.style.display = 'block';
                 transactionListEl.style.display = 'none';
+                listHeaderEl.style.display = 'none';
                 return;
             }
 
             emptyMessageEl.style.display = 'none';
             transactionListEl.style.display = 'block';
+            listHeaderEl.style.display = 'flex';
 
             // Sort by date descending (most recent first)
             filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -410,18 +634,28 @@
             filtered.forEach(transaction => {
                 const li = document.createElement('li');
                 li.className = 'transaction-item';
+                const categoryIcon = getCategoryIcon(transaction.description);
+                const typeIcon = transaction.type === 'income' ? 'fa-arrow-down' : 'fa-arrow-up';
+                const typeColor = transaction.type === 'income' ? 'color: var(--income-color)' : 'color: var(--expense-color)';
+                
                 li.innerHTML = `
+                    <i class="fas ${typeIcon} type-icon" style="${typeColor}"></i>
                     <div class="transaction-info">
-                        <div class="transaction-desc">${escapeHTML(transaction.description)}</div>
+                        <div class="transaction-desc">
+                            <i class="fas ${categoryIcon}"></i>
+                            ${escapeHTML(transaction.description)}
+                        </div>
                         <div class="transaction-meta">
-                            ${transaction.type === 'income' ? '💰 Income' : '💸 Expense'} • 
+                            <i class="fas fa-calendar-alt"></i>
                             ${new Date(transaction.date).toLocaleDateString()}
                         </div>
                     </div>
                     <span class="transaction-amount ${transaction.type === 'income' ? 'income-amount' : 'expense-amount'}">
                         ${transaction.type === 'income' ? '+' : '-'}${formatCurrency(transaction.amount)}
                     </span>
-                    <button class="delete-btn" data-id="${transaction.id}" title="Delete">✕</button>
+                    <button class="delete-btn" data-id="${transaction.id}" title="Delete transaction">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 `;
                 transactionListEl.appendChild(li);
             });
@@ -429,8 +663,11 @@
             // Attach delete handlers
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    deleteTransaction(id);
+                    e.preventDefault();
+                    const id = e.currentTarget.getAttribute('data-id');
+                    if (confirm('Are you sure you want to delete this transaction?')) {
+                        deleteTransaction(id);
+                    }
                 });
             });
         }
